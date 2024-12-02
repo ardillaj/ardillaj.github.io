@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex Generacional</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #34495e, #2ecc71);
+            color: #fff;
+            margin: 0;
+            padding: 0;
+            transition: all 0.3s ease;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem;
+            background-color: #27ae60;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+
+        .main-content {
+            padding: 3rem 1rem;
+            background-color: #fff;
+            color: #333;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .main-content img {
+            width: 100%;
+            max-width: 600px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-enter {
+            display: inline-block;
+            background-color: #27ae60;
+            color: white;
+            padding: 1rem 2rem;
+            margin-top: 2rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: background 0.3s;
+        }
+
+        .btn-enter:hover {
+            background-color: #2ecc71;
+        }
+
+        .search-bar {
+            margin: 1rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .search-bar input {
+            padding: 0.8rem;
+            width: 80%;
+            font-size: 1rem;
+            border-radius: 5px;
+            border: 2px solid #ddd;
+            outline: none;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background: #2ecc71;
+            padding: 1rem 0;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            margin: 0;
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            color: white;
+            font-size: 1.2rem;
+            transition: background 0.3s;
+        }
+
+        .tab:hover, .tab.active {
+            background: #27ae60;
+        }
+
+        .content {
+            display: none;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .content.active {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .pokemon-card {
+            background-color: #f5f5f5;
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+            color: #333;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .pokemon-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .pokemon-card img {
+            width: 100px;
+            height: 100px;
+            image-rendering: pixelated;
+        }
+
+        .pokemon-card h3 {
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            background: white;
+            color: black;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-header {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            color: #27ae60;
+        }
+
+        .modal img {
+            display: block;
+            margin: 0 auto;
+            cursor: pointer;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+        }
+
+        .modal table {
+            width: 100%;
+            margin-top: 1.5rem;
+            border-collapse: collapse;
+        }
+
+        .modal table th, .modal table td {
+            padding: 1rem;
+            border: 1px solid #ddd;
+        }
+
+        .modal table th {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .modal-close {
+            cursor: pointer;
+            float: right;
+            font-size: 2rem;
+            color: #888;
+        }
+
+        .music-control {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #27ae60;
+            color: white;
+            padding: 1rem;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content" id="main-content">
+        <header>
+            <h1>Bienvenido al Mundo Pokémon</h1>
+        </header>
+
+        <div class="main-content">
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png" alt="Imagen de Pokémon">
+            <p>Descubre y explora la Pokédex Generacional con todos los Pokémon de la primera a la quinta generación.</p>
+            <button id="enter-pokedex" class="btn-enter">Ir a la Pokédex Generacional</button>
+        </div>
+    </div>
+
+    <!-- Pokédex -->
+    <div class="pokédex-content" id="pokédex-content" style="display: none;">
+        <header>
+            <h1>Pokédex Generacional</h1>
+            <p>Explora Pokémon organizados por generación (1.ª a 5.ª)</p>
+        </header>
+
+        <div class="search-bar">
+            <input type="text" id="search-input" placeholder="Busca un Pokémon por nombre o número..." aria-label="Buscar Pokémon">
+        </div>
+
+        <nav>
+            <div class="tabs" id="tabs">
+                <div class="tab active" data-gen="1" role="tab">Primera Generación</div>
+                <div class="tab" data-gen="2" role="tab">Segunda Generación</div>
+                <div class="tab" data-gen="3" role="tab">Tercera Generación</div>
+                <div class="tab" data-gen="4" role="tab">Cuarta Generación</div>
+                <div class="tab" data-gen="5" role="tab">Quinta Generación</div>
+            </div>
+        </nav>
+
+        <main>
+            <div class="content active" id="gen-1" role="tabpanel" aria-labelledby="tab-1"></div>
+            <div class="content" id="gen-2" role="tabpanel" aria-labelledby="tab-2"></div>
+            <div class="content" id="gen-3" role="tabpanel" aria-labelledby="tab-3"></div>
+            <div class="content" id="gen-4" role="tabpanel" aria-labelledby="tab-4"></div>
+            <div class="content" id="gen-5" role="tabpanel" aria-labelledby="tab-5"></div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal" role="dialog" aria-hidden="true">
+        <button class="modal-close" id="modal-close" aria-label="Cerrar Modal">✖</button>
+        <div class="modal-header" id="modal-title"></div>
+        <img id="modal-image" alt="Imagen del Pokémon" />
+        <div id="modal-description"></div>
+        <table id="modal-table"></table>
+    </div>
+
+    <!-- Control Música -->
+    <button id="music-control" class="music-control" aria-label="Reproducir/Pausar Música">🎶</button>
+
+    <script>
+        document.getElementById('enter-pokedex').addEventListener('click', () => {
+            document.getElementById('main-content').style.display = 'none';
+            document.getElementById('pokédex-content').style.display = 'block';
+        });
+
+        const generationUrls = [
+            'https://pokeapi.co/api/v2/pokemon?limit=151', // Gen 1
+            'https://pokeapi.co/api/v2/pokemon?limit=100&offset=151', // Gen 2
+            'https://pokeapi.co/api/v2/pokemon?limit=135&offset=251', // Gen 3
+            'https://pokeapi.co/api/v2/pokemon?limit=107&offset=386', // Gen 4
+            'https://pokeapi.co/api/v2/pokemon?limit=156&offset=493'  // Gen 5
+        ];
+
+        // Diccionario de traducción de tipos
+        const typeTranslations = {
+            fire: 'Fuego',
+            water: 'Agua',
+            grass: 'Planta',
+            electric: 'Eléctrico',
+            psychic: 'Psíquico',
+            ice: 'Hielo',
+            dragon: 'Dragón',
+            ghost: 'Fantasma',
+            dark: 'Siniestro',
+            fairy: 'Hada',
+            fighting: 'Lucha',
+            normal: 'Normal',
+            poison: 'Veneno',
+            ground: 'Tierra',
+            flying: 'Volador',
+            bug: 'Bicho',
+            rock: 'Roca',
+            steel: 'Acero',
+            light: 'Luz'
+        };
+
+        const loadGenerationData = (genIndex) => {
+            fetch(generationUrls[genIndex])
+                .then(response => response.json())
+                .then(data => {
+                    const genContent = document.getElementById(`gen-${genIndex + 1}`);
+                    genContent.innerHTML = ''; // Limpiar contenido previo
+                    data.results.forEach(pokemon => {
+                        const pokemonCard = document.createElement('div');
+                        pokemonCard.classList.add('pokemon-card');
+                        const pokemonId = pokemon.url.split('/')[6];
+                        pokemonCard.innerHTML = `
+                            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png" alt="${pokemon.name}">
+                            <h3>${pokemon.name.charAt(0).toUpperCase() + pokemon.name.slice(1)}</h3>
+                        `;
+                        pokemonCard.addEventListener('click', () => openModal(pokemon.url));
+                        genContent.appendChild(pokemonCard);
+                    });
+                });
+        };
+
+        const openModal = (url) => {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    const speciesUrl = data.species.url;
+                    fetch(speciesUrl)
+                        .then(response => response.json())
+                        .then(speciesData => {
+                            document.getElementById('modal-title').textContent = `${data.name.charAt(0).toUpperCase() + data.name.slice(1)} (#${data.id})`;
+                            document.getElementById('modal-image').src = data.sprites.other['official-artwork'].front_default;
+
+                            // Descripción del Pokémon en Español
+                            const descriptionEntry = speciesData.flavor_text_entries.find(entry => entry.language.name === "es");
+                            const description = descriptionEntry ? descriptionEntry.flavor_text : "No hay descripción disponible en español.";
+                            document.getElementById('modal-description').innerHTML = `<p>${description}</p>`;
+
+                            // Tipos (traducidos al español)
+                            const types = data.types.map(type => typeTranslations[type.type.name]).join(', ');
+
+                            // Fortalezas y Debilidades (Ejemplo simple)
+                            const strengths = types;  // Puedes mejorar este mapeo con más datos reales
+                            const weaknesses = 'Fuego, Agua, Eléctrico'; // Ejemplo, necesitarías un mapeo real de tipos
+
+                            const table = document.getElementById('modal-table');
+                            table.innerHTML = `
+                                <tr><th>Tipo</th><td>${types}</td></tr>
+                                <tr><th>Fortalezas</th><td>${strengths}</td></tr>
+                                <tr><th>Debilidades</th><td>${weaknesses}</td></tr>
+                            `;
+
+                            document.getElementById('modal').style.display = 'block';
+                            document.getElementById('modal').setAttribute('aria-hidden', 'false');
+                        });
+                });
+        };
+
+        document.getElementById('modal-close').addEventListener('click', () => {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('modal').setAttribute('aria-hidden', 'true');
+        });
+
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const genIndex = tab.getAttribute('data-gen') - 1;
+                document.querySelectorAll('.content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(`gen-${genIndex + 1}`).classList.add('active');
+                loadGenerationData(genIndex);
+            });
+        });
+
+        loadGenerationData(0); // Cargar generación 1 inicialmente
+    </script>
+</body>
+</html>
